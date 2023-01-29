@@ -1,0 +1,7 @@
+( prices(apple 3.6)(orange 2.5)   (banana 1.4 )  )
+
+(netlist
+  (netname "VCC" (node 1 (ref "U1") (pin 1)) (node 2 (ref "R1") (pin 2)))
+  (netname "GND" (node 3 (ref "U1") (pin 4)) (node 4 (ref "R1") (pin 1))))
+
+(a . (b . (c . (d . ()))))
