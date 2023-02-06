@@ -3,7 +3,7 @@
 
 This file is a part of S-expression Library for Python (sxprlib.py).
 """
-ratcomplex_version = "1.0"
+ratcomplex_version = "1.1"
 ##################################################################################
 # This library is released under the MIT license.                                #
 # -------------------------------------------------------                        #
@@ -233,10 +233,26 @@ class Complex:
         return Complex.__reduce_comp(real, imag)
 
     def __pow__(self, v):
-        s = complex(self)
-        if type(v) is Complex:
-            v = complex(v)
-        return s**v
+        if type(v) is int:
+            if v < 0:
+                sgn = -1
+                v = -v
+            else:
+                sgn = 1
+            b = bin(v).replace("0b", "")
+            s = 1
+            for d in b:
+                s = s * s
+                if d == "1":
+                    s = s * self
+            if sgn == -1:
+                s = 1 / s
+            return s
+        else:
+            s = complex(self)
+            if type(v) is Complex:
+                v = complex(v)
+            return s**v
 
     def __rpow__(self, v):
         s = complex(self)
