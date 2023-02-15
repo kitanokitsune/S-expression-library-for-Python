@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-"""S-expression library for Python ver1.0
+"""S-expression library for Python ver1.1
 
 S-expression data structure parser/manipulator intended for
 parsing and manipulating lisp program, lisp data, netlists like EDIF and KiCAD, etc.
@@ -8,7 +8,7 @@ This library is tested with the following huge EDIF file.
 Filename: 0644.edf (12MB)
 File URL: http://web.archive.org/web/20040812175715/http://mint.cs.man.ac.uk/Projects/gertrude/edif-files/index.html
 """
-sxpr_version = "1.0"
+sxpr_version = "1.1"
 ##################################################################################
 # This library is released under the MIT license.                                #
 # -------------------------------------------------------                        #
@@ -39,6 +39,8 @@ sxprlib_enableEscape = False  # treat "\" in a string as an escape char if True
 sxprlib_enableQuote = False  # treat "'" as lisp-like special form (quote) if True
 sxprlib_enableFuncRef = False  # treat "#'" as lisp's function reference if True
 
+sxprlib_enableDec = True  # enable decimal number (like "1234567890") if True
+sxprlib_enableFloat = False  # enable floating point (like "12.1", "12e10") if True
 sxprlib_enableBin = False  # enable binary number (like "#b10") if True
 sxprlib_enableOct = False  # enable octal number (like "#o76") if True
 sxprlib_enableHex = False  # enable hexadecimal number (like "#xFE") if True
@@ -514,13 +516,13 @@ class Symbol:
                 )
             )
             if (
-                _is_integer(s)
+                (sxprlib_enableDec and _is_integer(s))
                 or (sxprlib_enableBin and _is_bin(s))
                 or (sxprlib_enableOct and _is_oct(s))
                 or (sxprlib_enableHex and _is_hex(s))
                 or (sxprlib_enableRadix and _is_radix(s))
                 or (sxprlib_enableFrac and _is_fraction(s))
-                or _is_number(s)
+                or (sxprlib_enableFloat and _is_number(s) and not _is_integer(s))
             ):
                 s = "|{}|".format(s)
             return "{}".format(s)
@@ -1185,9 +1187,9 @@ def _sxpr_tokenizer(streamer):
         ):
             d = streamer.read()
             s = s + d
-        if _is_integer(s):
+        if _is_integer(s) and sxprlib_enableDec:
             return int(s)
-        elif _is_number(s):
+        elif _is_number(s) and not _is_integer(s) and sxprlib_enableFloat:
             return float(
                 s.lower().replace("d", "e").replace("f", "e").replace("s", "e")
             )
